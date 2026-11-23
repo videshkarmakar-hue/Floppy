@@ -61,18 +61,6 @@ More than just a file explorer, Floppy brings your files and media together with
 ### 📊 Storage Overview
 - Visual representation of internal storage usage.
 - Quick understanding of available and occupied space.
-
----
-
-## 📸 Screenshots
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/2d36cbea-e994-4302-b3a3-4b4364e96a41" width="200" alt="Floppy Screenshot 1">
-  <img src="https://github.com/user-attachments/assets/66b864ed-2598-477c-bdb4-d045a71e93b9" width="200" alt="Floppy Screenshot 2">
-  <img src="https://github.com/user-attachments/assets/874a9d0f-1796-4e4d-9f92-2c8915626376" width="200" alt="Floppy Screenshot 3">
-  <img src="https://github.com/user-attachments/assets/ca1e78e0-8e68-4985-bc9c-39e763b8ed74" width="200" alt="Floppy Screenshot 4">
-</p>
-
 ---
 
 ## 🔐 Permissions
