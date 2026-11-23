@@ -147,5 +147,5 @@ By combining essential file operations, native media indexing, built-in media pl
 <p align="center">
   <b>Floppy — Rethinking File Management.</b>
   <br>
-  Made with ❤️ using Flutter.
+  Made with ❤️ by # Videsh Karmakar.
 </p>
