@@ -7,7 +7,6 @@ on:
     paths-ignore:
       - '**.md'
       - '.gitignore'
-      - 'LICENSE'
       - 'docs/**'
       - 'fastlane/**'
       - 'metadata/**'
@@ -17,7 +16,6 @@ on:
     paths-ignore:
       - '**.md'
       - '.gitignore'
-      - 'LICENSE'
       - 'docs/**'
       - 'fastlane/**'
       - 'metadata/**'
@@ -136,6 +134,6 @@ jobs:
           draft: false
           prerelease: false
           make_latest: true
-          files: build/app/outputs/flutter-apk/NFile-${{ env.APP_VERSION }}-*.apk
+          files: build/app/outputs/flutter-apk/Floppy-${{ env.APP_VERSION }}-*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
