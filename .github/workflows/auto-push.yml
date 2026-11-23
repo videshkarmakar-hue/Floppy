@@ -1,0 +1,37 @@
+name: Push Changes to Floppy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  push-to-github:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push to GitHub
+        run: |
+          git config --global user.name "Floppy Agent"
+          git config --global user.email "floppy-agent@users.noreply.github.com"
+          git add -A
+          git commit -m "Auto-push: Update from OpenCode agent" || echo "No changes to commit"
+          git push origin master
+
+      - name: Create Pull Request (if changes)
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Auto-update from OpenCode"
+          body: "Auto-generated PR from OpenCode agent"
+          branch: auto-update-agent
+          delete-branch: true
+          labels: |
+            agent
+            auto
+        continue-on-error: true
