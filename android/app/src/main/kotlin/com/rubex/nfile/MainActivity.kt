@@ -38,7 +38,7 @@ import android.os.storage.StorageManager
 import android.os.Process
 
 class MainActivity : AudioServiceFragmentActivity() {
-    private val CHANNEL = "com.rubex.nfile/root_shizuku"
+    private val CHANNEL = "com.videshkarmakar.floppy/root_shizuku"
     private val SHIZUKU_REQUEST_CODE = 10001
     private val executor = Executors.newCachedThreadPool()
     private var pendingPermissionResult: MethodChannel.Result? = null
@@ -437,7 +437,7 @@ class MainActivity : AudioServiceFragmentActivity() {
             }
         }
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rubex.nfile/saf").setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.videshkarmakar.floppy/saf").setMethodCallHandler { call, result ->
             when (call.method) {
                 "requestSafDirectory" -> {
                     safPermissionResult = result
@@ -610,7 +610,7 @@ class MainActivity : AudioServiceFragmentActivity() {
             }
         }
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rubex.nfile/gesture_exclusion").setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.videshkarmakar.floppy/gesture_exclusion").setMethodCallHandler { call, result ->
             if (call.method == "setSystemGestureExclusionRects") {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     val rectsArg = call.argument<List<Map<String, Int>>>("rects")
@@ -640,7 +640,7 @@ class MainActivity : AudioServiceFragmentActivity() {
             }
         }
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rubex.nfile/ftp_service").setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.videshkarmakar.floppy/ftp_service").setMethodCallHandler { call, result ->
             when (call.method) {
                 "startFtpService" -> {
                     val ip = call.argument<String>("ip") ?: "127.0.0.1"
@@ -673,7 +673,7 @@ class MainActivity : AudioServiceFragmentActivity() {
             }
         }
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rubex.nfile/web_sharing_service").setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.videshkarmakar.floppy/web_sharing_service").setMethodCallHandler { call, result ->
             when (call.method) {
                 "startWebSharingService" -> {
                     val url = call.argument<String>("url") ?: "http://127.0.0.1:8080"
@@ -706,7 +706,7 @@ class MainActivity : AudioServiceFragmentActivity() {
             }
         }
 
-        notificationsChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rubex.nfile/notifications")
+        notificationsChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.videshkarmakar.floppy/notifications")
         notificationsChannel?.setMethodCallHandler { call, result ->
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channelId = "nfile_archive_channel"

@@ -91,7 +91,7 @@ class _SwipableStorageOverviewState extends State<SwipableStorageOverview> {
     final volumes = provider.storageVolumes;
 
     // Show shimmering skeleton loading card while spaces are being calculated
-    if (volumes.isEmpty || provider.totalStorageBytes == 0) {
+    if (volumes.isEmpty || provider.isStorageLoading) {
       return _buildSkeletonCard(context, isMultiVolume: volumes.length > 1);
     }
 

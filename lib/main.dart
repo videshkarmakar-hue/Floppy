@@ -13,6 +13,7 @@ import 'core/theme.dart';
 import 'core/icon_fonts/broken_icons.dart';
 import 'providers/file_manager_provider.dart';
 import 'providers/media_provider.dart';
+import 'providers/update_provider.dart';
 import 'services/preferences_service.dart';
 import 'services/network_connections_service.dart';
 import 'services/intent_handler_service.dart';
@@ -21,6 +22,7 @@ import 'services/recycle_bin_service.dart';
 import 'services/audio_background_handler.dart';
 import 'package:audio_service/audio_service.dart';
 import 'ui/screens/home_screen.dart';
+import 'ui/widgets/force_update_gate.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -73,6 +75,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => FileManagerProvider()),
         ChangeNotifierProvider(create: (_) => MediaProvider()),
+        ChangeNotifierProvider(create: (_) => UpdateProvider()),
       ],
       child: const FloppyApp(),
     ),
@@ -365,13 +368,15 @@ class _FlappyAppState extends State<FloppyApp> {
                   child: child!,
                 );
               },
-              home: _isResolvingIntent
-                  ? const _IntentLoadingScreen()
-                  : (_hasPermission == null
-                      ? const Scaffold()
-                      : (_hasPermission == true
-                          ? HomeScreen(toggleTheme: _toggleTheme)
-                          : _StoragePermissionShield(onRequestPermission: _requestStoragePermission))),
+              home: ForceUpdateGate(
+                child: _isResolvingIntent
+                    ? const _IntentLoadingScreen()
+                    : (_hasPermission == null
+                        ? const Scaffold()
+                        : (_hasPermission == true
+                            ? HomeScreen(toggleTheme: _toggleTheme)
+                            : _StoragePermissionShield(onRequestPermission: _requestStoragePermission))),
+              ),
             );
           },
         );

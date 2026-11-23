@@ -1,0 +1,153 @@
+name: Release APK
+
+# Bump `version:` in pubspec.yaml, commit and push to master/main.
+# Per-ABI release APKs are built and attached to the GitHub Release tagged
+# `v<version>`, which is what Floppy's in-app updater reads.
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - 'pubspec.yaml'
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish release APKs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Get App Version
+        id: version
+        run: |
+          set -euo pipefail
+          VERSION=$(grep '^version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d '+' -f 1)
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not read version from pubspec.yaml"
+            exit 1
+          fi
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Release tag will be v$VERSION"
+
+      - name: Check if Version Already Released
+        id: check_release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "${{ steps.version.outputs.tag }}" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            echo "Version ${{ steps.version.outputs.tag }} is already released. Skipping build."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Version ${{ steps.version.outputs.tag }} is new. Building."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Java
+        if: steps.check_release.outputs.exists == 'false'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter
+        if: steps.check_release.outputs.exists == 'false'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.50.1'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Android NDK
+        if: steps.check_release.outputs.exists == 'false'
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;28.2.13676358" >/dev/null
+
+      - name: Install Dependencies
+        if: steps.check_release.outputs.exists == 'false'
+        run: flutter pub get
+
+      # Android only installs an update over an app signed with the same key,
+      # so every published APK must carry the project keystore.
+      - name: Configure Keystore and Signing
+        if: steps.check_release.outputs.exists == 'false'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::KEYSTORE_BASE64 secret is missing. Without a stable key the in-app updater cannot install these APKs."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+          {
+            echo "storePassword=$STORE_PASSWORD"
+            echo "keyPassword=$KEY_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "storeFile=upload-keystore.jks"
+          } > android/key.properties
+
+      # Release builds drop the ~125 MB debug kernel blob and the Vulkan
+      # validation layer; --split-per-abi ships one ABI per APK instead of three
+      # and icon tree shaking (on by default) cuts the Material Icons font to the
+      # glyphs actually used.
+      - name: Build Release APKs
+        if: steps.check_release.outputs.exists == 'false'
+        run: flutter build apk --release --split-per-abi
+
+      - name: Verify APK Signatures
+        if: steps.check_release.outputs.exists == 'false'
+        run: |
+          APKSIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          for apk in build/app/outputs/flutter-apk/app-*-release.apk; do
+            echo "$apk"
+            "$APKSIGNER" verify --print-certs "$apk" | grep -E "Signer #1 certificate SHA-256"
+          done
+
+      - name: Name APKs for Release
+        if: steps.check_release.outputs.exists == 'false'
+        run: |
+          mkdir -p dist
+          for abi in arm64-v8a armeabi-v7a x86_64; do
+            mv "build/app/outputs/flutter-apk/app-$abi-release.apk" \
+               "dist/Floppy-${{ steps.version.outputs.tag }}-$abi.apk"
+          done
+          ls -lh dist
+
+      - name: Upload APKs to Artifacts
+        if: steps.check_release.outputs.exists == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: floppy-${{ steps.version.outputs.tag }}-apks
+          path: dist/*.apk
+
+      - name: Publish GitHub Release
+        if: steps.check_release.outputs.exists == 'false' && github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "Floppy ${{ steps.version.outputs.tag }}"
+          body: |
+            Release built automatically from `pubspec.yaml` (commit ${{ github.sha }}).
+
+            * Download the APK matching your device ABI: `arm64-v8a` for modern phones, `armeabi-v7a` for older 32-bit devices, `x86_64` for emulators.
+            * Floppy's in-app updater picks the matching APK and installs it directly.
+          draft: false
+          prerelease: false
+          make_latest: true
+          files: dist/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

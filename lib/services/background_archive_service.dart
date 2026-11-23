@@ -47,7 +47,7 @@ class BackgroundArchiveService {
     });
   }
 
-  static const _channel = MethodChannel('com.rubex.nfile/notifications');
+  static const _channel = MethodChannel('com.videshkarmakar.floppy/notifications');
 
   final ValueNotifier<BackgroundOperation?> activeOperation = ValueNotifier(null);
 

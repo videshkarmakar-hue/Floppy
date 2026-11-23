@@ -29,7 +29,7 @@
         android:requestLegacyExternalStorage="true"
         android:enableOnBackInvokedCallback="true">
         <activity
-            android:name=".MainActivity"
+            android:name="com.rubex.nfile.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:taskAffinity=""
@@ -99,12 +99,12 @@
         </activity>
 
         <activity-alias
-            android:name=".MainActivityDefault"
+            android:name="com.rubex.nfile.MainActivityDefault"
             android:enabled="true"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:label="Floppy"
-            android:targetActivity=".MainActivity">
+            android:targetActivity="com.rubex.nfile.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -112,12 +112,12 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".MainActivityLogo1"
+            android:name="com.rubex.nfile.MainActivityLogo1"
             android:enabled="false"
             android:exported="true"
             android:icon="@drawable/n1"
             android:label="Floppy"
-            android:targetActivity=".MainActivity">
+            android:targetActivity="com.rubex.nfile.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -125,12 +125,12 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".MainActivityLogo2"
+            android:name="com.rubex.nfile.MainActivityLogo2"
             android:enabled="false"
             android:exported="true"
             android:icon="@drawable/n2"
             android:label="Floppy"
-            android:targetActivity=".MainActivity">
+            android:targetActivity="com.rubex.nfile.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -138,12 +138,12 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".MainActivityLogo3"
+            android:name="com.rubex.nfile.MainActivityLogo3"
             android:enabled="false"
             android:exported="true"
             android:icon="@drawable/n3"
             android:label="Floppy"
-            android:targetActivity=".MainActivity">
+            android:targetActivity="com.rubex.nfile.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -151,12 +151,12 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".MainActivityLogo4"
+            android:name="com.rubex.nfile.MainActivityLogo4"
             android:enabled="false"
             android:exported="true"
             android:icon="@drawable/n4"
             android:label="Floppy"
-            android:targetActivity=".MainActivity">
+            android:targetActivity="com.rubex.nfile.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -176,7 +176,7 @@
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
         <provider
-            android:name=".NFileDocumentsProvider"
+            android:name="com.rubex.nfile.NFileDocumentsProvider"
             android:authorities="com.videshkarmakar.floppy.documents"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -187,13 +187,13 @@
         </provider>
 
         <service
-            android:name=".FtpForegroundService"
+            android:name="com.rubex.nfile.FtpForegroundService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
         <service
-            android:name=".WebSharingForegroundService"
+            android:name="com.rubex.nfile.WebSharingForegroundService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />

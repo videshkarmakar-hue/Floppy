@@ -1369,6 +1369,9 @@ class FileManagerProvider extends ChangeNotifier {
   int _rawTotalStorageBytes = 0;
   int _rawUsedStorageBytes = 0;
 
+  bool _isStorageLoading = true;
+  bool get isStorageLoading => _isStorageLoading;
+
   int get totalStorageBytes => _totalStorageBytes;
   int get usedStorageBytes => _usedStorageBytes;
   int get rawTotalStorageBytes => _rawTotalStorageBytes;
@@ -1377,8 +1380,10 @@ class FileManagerProvider extends ChangeNotifier {
   double get rawStorageUsedPercentage => _rawTotalStorageBytes == 0 ? 0.0 : (_rawUsedStorageBytes / _rawTotalStorageBytes);
 
   Future<void> updateStorageSpace() async {
-    final space = await RootShizukuService.getStorageSpace();
-    if (space != null) {
+    _isStorageLoading = true;
+    try {
+      final space = await RootShizukuService.getStorageSpace();
+      if (space != null) {
       final rawTotal = space['totalBytes'] ?? 0;
       final rawUsed = space['usedBytes'] ?? 0;
 
@@ -1438,6 +1443,10 @@ class FileManagerProvider extends ChangeNotifier {
         }
       }
 
+      notifyListeners();
+      }
+    } finally {
+      _isStorageLoading = false;
       notifyListeners();
     }
   }

@@ -44,6 +44,9 @@ subprojects {
         project.afterEvaluate {
             project.plugins.withId("com.android.library") {
                 project.extensions.configure<com.android.build.gradle.LibraryExtension> {
+                    // Some git-pinned plugins still declare an old compileSdk (e.g. 31),
+                    // which modern AGP rejects when its androidx deps need API 34+.
+                    compileSdk = 36
                     compileOptions {
                         sourceCompatibility = JavaVersion.VERSION_17
                         targetCompatibility = JavaVersion.VERSION_17

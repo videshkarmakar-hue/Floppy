@@ -7,7 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import '../models/app_info_model.dart';
 
 class AppManagerService {
-  static const MethodChannel _channel = MethodChannel('com.rubex.nfile/root_shizuku');
+  static const MethodChannel _channel = MethodChannel('com.videshkarmakar.floppy/root_shizuku');
 
   static Future<List<AppInfoModel>> getInstalledApps({bool includeSystem = false}) async {
     try {

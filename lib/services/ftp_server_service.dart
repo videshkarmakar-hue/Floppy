@@ -8,7 +8,7 @@ class FtpServerService {
   static final FtpServerService instance = FtpServerService._internal();
   FtpServerService._internal();
 
-  static const _channel = MethodChannel('com.rubex.nfile/ftp_service');
+  static const _channel = MethodChannel('com.videshkarmakar.floppy/ftp_service');
 
   ServerSocket? _controlSocket;
   int _port = 9999;

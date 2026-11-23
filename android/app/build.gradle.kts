@@ -52,8 +52,21 @@ android {
     }
 
     buildTypes {
+        // Sign debug builds with the project keystore when one is configured, so
+        // builds from CI keep a stable signature and the in-app updater can
+        // install each new APK over the previous one.
+        debug {
+            signingConfig = signingConfigs.getByName(
+                if (keystorePropertiesFile.exists()) "release" else "debug"
+            )
+        }
         release {
-            signingConfig = signingConfigs.getByName("release")
+            // Without key.properties (local builds) sign with the debug keystore,
+            // which is the same key the currently installed debug build uses, so
+            // the APK installs as an update instead of failing on a key mismatch.
+            signingConfig = signingConfigs.getByName(
+                if (keystorePropertiesFile.exists()) "release" else "debug"
+            )
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -65,6 +78,28 @@ android {
 
     packaging {
         jniLibs.useLegacyPackaging = false
+    }
+
+    // flutter_avif_web and media_kit bundle browser-only artifacts (.wasm / hls.js)
+    // that are never loaded on Android, where the native libraries are used instead.
+    // Strip them from Flutter's staged assets so every APK ships ~3 MB less.
+    val webOnlyFlutterAssets = listOf(
+        "packages/flutter_avif_web/web/avif_encoder_bg.wasm",
+        "packages/flutter_avif_web/web/avif_decoder.wasm",
+        "packages/media_kit/assets/web/hls1.4.10.js",
+    )
+    tasks.matching { it.name.startsWith("copyFlutterAssets") }.configureEach {
+        val taskName = name
+        val stagedAssets = layout.buildDirectory
+            .dir("intermediates/assets/${taskName.removePrefix("copyFlutterAssets").replaceFirstChar { it.lowercase() }}/$taskName/flutter_assets")
+        doLast {
+            webOnlyFlutterAssets.forEach { relativePath ->
+                val asset = stagedAssets.get().file(relativePath).asFile
+                if (asset.exists() && asset.delete()) {
+                    logger.lifecycle("Stripped web-only Flutter asset: $relativePath")
+                }
+            }
+        }
     }
 }
 

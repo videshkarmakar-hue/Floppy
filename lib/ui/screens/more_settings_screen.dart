@@ -5,10 +5,12 @@ import '../../providers/file_manager_provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../core/utils.dart';
 import '../widgets/quick_categories_grid.dart';
+import '../widgets/app_update_section.dart';
 import '../../services/preferences_service.dart';
 import '../widgets/nfile_icon.dart';
 import '../../services/recycle_bin_service.dart';
 import 'package:path/path.dart' as p;
+import 'package:url_launcher/url_launcher.dart';
 import 'internal_file_picker_screen.dart';
 import 'backup_settings_screen.dart';
 import '../../services/settings_backup_service.dart';
@@ -125,7 +127,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
             decoration: BoxDecoration(
               color: theme.colorScheme.surface.withOpacity(0.3),
               borderRadius: BorderRadius.circular(12),
-              border: BorderSide(color: theme.colorScheme.outline.withOpacity(0.1)),
+              border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,7 +151,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(8),
-                    border: BorderSide(color: theme.colorScheme.primary.withOpacity(0.1)),
+                    border: Border.all(color: theme.colorScheme.primary.withOpacity(0.1)),
                   ),
                   child: Text(
                     'Built independently with a commitment to thoughtful design, modern technology, and creating meaningful digital experiences.\n\nThank you for being part of Floppy.',
@@ -186,15 +188,14 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
     );
   }
 
-  Widget _buildAppUpdateSection(BuildContext context, ThemeData theme) {
+  Widget _buildAppInfoSection(BuildContext context, ThemeData theme) {
     return Container(
       margin: const EdgeInsets.only(top: 32, bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // App Update Header
           Text(
-            'APP UPDATE',
+            'APP INFO',
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.primary,
@@ -202,95 +203,25 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          // Divider
           Container(
             height: 1,
             color: theme.colorScheme.outline.withOpacity(0.3),
             margin: const EdgeInsets.symmetric(vertical: 4),
           ),
           const SizedBox(height: 16),
-          // Update available text
-          Text(
-            'An update is available for Floppy',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontSize: 14,
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Version 3.0.0.0 has been released with new features and bug fixes.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 24),
-          // Update button
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-              border: BorderSide(color: theme.colorScheme.primary.withOpacity(0.2)),
-            ),
-            child: Text(
-              'Update Now',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Currently on version
-          Text(
-            'You are on version 3.0.0.0',
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
-            ),
-          ),
-          const SizedBox(height: 24),
-          // Release notes
-          Text(
-            'Release Notes',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '- Improved performance and stability',
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '- Fixed minor bugs and enhanced security',
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '- Enhanced file management capabilities',
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
-            ),
-          ),
+          _buildDetailRow(context, theme, 'App Name', 'Floppy'),
+          _buildDetailRow(context, theme, 'Version', '3.0.0'),
+          _buildDetailRow(context, theme, 'Build Number', '3000'),
+          _buildDetailRow(context, theme, 'Package', 'com.videshkarmakar.floppy'),
+          _buildDetailRow(context, theme, 'Platform', 'Android'),
+          _buildDetailRow(context, theme, 'Developer', 'Videsh Karmakar'),
         ],
       ),
     );
+  }
+
+  Widget _buildAppUpdateSection(BuildContext context, ThemeData theme) {
+    return const AppUpdateSection();
   }
 
   Widget _buildLinkItem(BuildContext context, ThemeData theme, String title, String url) {
@@ -365,6 +296,8 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
       ),
     );
   }
+
+  Widget _buildCategoryCard(
     BuildContext context,
     ThemeData theme, {
     required IconData icon,
@@ -2689,7 +2622,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
                             theme,
                             id: 'logo1',
                             title: 'Logo 1',
-                            imagePath: 'assets/logo/n1.png',
+                            imagePath: 'assets/logo/n1.webp',
                           ),
                           _buildIconOptionCard(
                             context,
@@ -2697,7 +2630,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
                             theme,
                             id: 'logo2',
                             title: 'Logo 2',
-                            imagePath: 'assets/logo/n2.png',
+                            imagePath: 'assets/logo/n2.webp',
                           ),
                           _buildIconOptionCard(
                             context,
@@ -2705,7 +2638,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
                             theme,
                             id: 'logo3',
                             title: 'Logo 3',
-                            imagePath: 'assets/logo/n3.png',
+                            imagePath: 'assets/logo/n3.webp',
                           ),
                           _buildIconOptionCard(
                             context,
@@ -2713,7 +2646,7 @@ void _showAppIconPickerDialog(BuildContext context, FileManagerProvider fileMana
                             theme,
                             id: 'logo4',
                             title: 'Logo 4',
-                            imagePath: 'assets/logo/n4.png',
+                            imagePath: 'assets/logo/n4.webp',
                           ),
                         ],
                       ),

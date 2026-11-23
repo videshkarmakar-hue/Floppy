@@ -19,7 +19,9 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+// TickerProviderStateMixin (not the Single... variant): this state drives two
+// AnimationControllers, and a SingleTickerProvider can only hand out one ticker.
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, TickerProviderStateMixin {
   int _currentIndex = 0;
   DateTime? _lastBrowseTapTime;
   DateTime? _lastPressedAt;
@@ -48,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
   @override
   void dispose() {
     _refreshIconController.dispose();
+    _settingsIconController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -250,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                   }
                   setState(() => _currentIndex = index);
                 },
-                destinations: const [
+                destinations: [
                   NavigationDestination(
                     icon: FloppyIcon(Broken.home),
                     selectedIcon: FloppyIcon(Broken.home_1),
