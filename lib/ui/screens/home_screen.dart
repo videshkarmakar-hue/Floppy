@@ -10,6 +10,7 @@ import '../widgets/recent_files_section.dart';
 import '../widgets/nfile_drawer.dart';
 import '../widgets/nfile_icon.dart';
 import 'directory_screen.dart';
+import 'more_settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback toggleTheme;
@@ -230,6 +231,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ti
               toggleTheme: widget.toggleTheme,
               onNavigateTab: (index) => setState(() => _currentIndex = index),
             ),
+            const MoreSettingsScreen(embedded: true),
           ],
         ),
         bottomNavigationBar: provider.showHomeBrowseNav
@@ -248,8 +250,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ti
                       provider.loadDirectory(provider.rootPath);
                     }
                     _lastBrowseTapTime = now;
-                  } else if (index == 2) {
-                    // Settings tapped - could navigate to settings screen
                   }
                   setState(() => _currentIndex = index);
                 },

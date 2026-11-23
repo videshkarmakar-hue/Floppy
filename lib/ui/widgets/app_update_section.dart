@@ -10,7 +10,12 @@ import '../../providers/update_provider.dart';
 /// inside the app. It never opens the GitHub release page; releases without an
 /// APK asset are reported in-app instead.
 class AppUpdateSection extends StatelessWidget {
-  const AppUpdateSection({super.key});
+  /// Whether the inline "APP UPDATES" heading and divider are shown. The
+  /// dedicated App Updates screen hides them because its app bar already
+  /// identifies the page.
+  final bool showHeader;
+
+  const AppUpdateSection({super.key, this.showHeader = true});
 
   @override
   Widget build(BuildContext context) {
@@ -18,25 +23,29 @@ class AppUpdateSection extends StatelessWidget {
     return Consumer<UpdateProvider>(
       builder: (context, update, _) {
         return Container(
-          margin: const EdgeInsets.only(top: 32, bottom: 16),
+          margin: showHeader
+              ? const EdgeInsets.only(top: 32, bottom: 16)
+              : EdgeInsets.zero,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'APP UPDATE',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.primary,
-                  letterSpacing: 1.2,
+              if (showHeader) ...[
+                Text(
+                  'APP UPDATES',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                    letterSpacing: 1.2,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                height: 1,
-                color: theme.colorScheme.outline.withOpacity(0.3),
-                margin: const EdgeInsets.symmetric(vertical: 4),
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 8),
+                Container(
+                  height: 1,
+                  color: theme.colorScheme.outline.withOpacity(0.3),
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                ),
+                const SizedBox(height: 16),
+              ],
               _buildContent(theme, update),
             ],
           ),

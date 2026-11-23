@@ -1,22 +1,27 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/file_manager_provider.dart';
 import '../../core/icon_fonts/broken_icons.dart';
 import '../../core/utils.dart';
 import '../widgets/quick_categories_grid.dart';
-import '../widgets/app_update_section.dart';
 import '../../services/preferences_service.dart';
 import '../widgets/nfile_icon.dart';
 import '../../services/recycle_bin_service.dart';
 import 'package:path/path.dart' as p;
-import 'package:url_launcher/url_launcher.dart';
 import 'internal_file_picker_screen.dart';
 import 'backup_settings_screen.dart';
+import 'developer_credits_screen.dart';
+import 'app_info_screen.dart';
+import 'app_updates_screen.dart';
 import '../../services/settings_backup_service.dart';
 
 class MoreSettingsScreen extends StatefulWidget {
-  const MoreSettingsScreen({super.key});
+  /// When true the screen is shown as a tab inside the home shell instead of
+  /// being pushed as its own route. Hides the back button and uses the
+  /// "Settings" title.
+  final bool embedded;
+
+  const MoreSettingsScreen({super.key, this.embedded = false});
 
   @override
   State<MoreSettingsScreen> createState() => _MoreSettingsScreenState();
@@ -49,252 +54,6 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
   bool _shouldShowHeader(List<bool> visibilities) {
     if (_searchQuery.isEmpty) return true;
     return visibilities.contains(true);
-  }
-
-  Widget _buildDeveloperCreditSection(BuildContext context, ThemeData theme) {
-    return Container(
-      margin: const EdgeInsets.only(top: 32, bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Developer Credit Header
-          Text(
-            'DEVELOPER CREDITS',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Divider
-          Container(
-            height: 1,
-            color: theme.colorScheme.outline.withOpacity(0.3),
-            margin: const EdgeInsets.symmetric(vertical: 4),
-          ),
-          const SizedBox(height: 16),
-          // Main text
-          Text(
-            'Crafted With Vision. Built With Purpose.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontSize: 14,
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 24),
-          // Developer info
-          Text(
-            'Videsh Karmakar\nFounder · Developer · UI/UX Designer',
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Floppy is proudly conceptualized
-          Text(
-            'Floppy is proudly conceptualized, designed, and developed by Videsh Karmakar — bringing together software engineering, product design, and a passion for technology to create a refined and intuitive digital experience.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 24),
-          // Connect with developer
-          Text(
-            'CONNECT WITH THE DEVELOPER',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
-              letterSpacing: 1.0,
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Links
-          _buildLinkItem(context, theme, 'Official Website', 'videshkarmakar.carrd.co'),
-          _buildLinkItem(context, theme, 'Spotify', 'Videsh Karmakar — Artist Profile'),
-          _buildLinkItem(context, theme, 'Instagram', '@code.red_videsh'),
-          _buildLinkItem(context, theme, 'YouTube', '@videshkarmakar2000'),
-          _buildLinkItem(context, theme, 'Facebook', 'gfx.videsh'),
-          const SizedBox(height: 24),
-          // Development & Design
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Development & Design',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildDetailRow(context, theme, 'Product', 'Floppy'),
-                _buildDetailRow(context, theme, 'Developed & Designed By', 'Videsh Karmakar'),
-                _buildDetailRow(context, theme, 'Design & Prototyping', 'Figma · Stitch'),
-                _buildDetailRow(context, theme, 'Platform', 'Android · iOS Coming Soon'),
-                const SizedBox(height: 12),
-                // Acknowledgement
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: theme.colorScheme.primary.withOpacity(0.1)),
-                  ),
-                  child: Text(
-                    'Built independently with a commitment to thoughtful design, modern technology, and creating meaningful digital experiences.\n\nThank you for being part of Floppy.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontSize: 11,
-                      color: theme.colorScheme.onSurface.withOpacity(0.5),
-                      height: 1.4,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 32),
-          // Floppy brand
-          Text(
-            'FLOPPY',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
-              letterSpacing: 2.0,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Crafted With Vision. Built With Purpose.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.5),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAppInfoSection(BuildContext context, ThemeData theme) {
-    return Container(
-      margin: const EdgeInsets.only(top: 32, bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'APP INFO',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 1,
-            color: theme.colorScheme.outline.withOpacity(0.3),
-            margin: const EdgeInsets.symmetric(vertical: 4),
-          ),
-          const SizedBox(height: 16),
-          _buildDetailRow(context, theme, 'App Name', 'Floppy'),
-          _buildDetailRow(context, theme, 'Version', '3.0.0'),
-          _buildDetailRow(context, theme, 'Build Number', '3000'),
-          _buildDetailRow(context, theme, 'Package', 'com.videshkarmakar.floppy'),
-          _buildDetailRow(context, theme, 'Platform', 'Android'),
-          _buildDetailRow(context, theme, 'Developer', 'Videsh Karmakar'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAppUpdateSection(BuildContext context, ThemeData theme) {
-    return const AppUpdateSection();
-  }
-
-  Widget _buildLinkItem(BuildContext context, ThemeData theme, String title, String url) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: InkWell(
-        onTap: () => _launchURL(context, url),
-        borderRadius: BorderRadius.circular(8),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontSize: 12,
-                  color: theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.open_in_new_rounded,
-              size: 16,
-              color: theme.colorScheme.primary.withOpacity(0.5),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _launchURL(BuildContext context, String urlString) async {
-    final Uri url = Uri.parse(urlString);
-    try {
-      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-        throw Exception('Could not launch $urlString');
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open link: $urlString')),
-        );
-      }
-    }
-  }
-
-  Widget _buildDetailRow(BuildContext context, ThemeData theme, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          Text(
-            '$label: ',
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontSize: 12,
-                color: theme.colorScheme.onSurface,
-              ),
-              softWrap: true,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildCategoryCard(
@@ -444,6 +203,10 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
     final backupSettingsVis = _shouldShow('Backup Settings', 'Save all your current settings to Floppy/Backups/Settings/');
     final restoreSettingsVis = _shouldShow('Restore Settings', 'Select and restore settings from a JSON backup file');
 
+    final developerCreditVis = _shouldShow('Developer Credit', 'Meet the developer behind Floppy, links and acknowledgements');
+    final appInfoVis = _shouldShow('App Info', 'Version, build number, package and device details');
+    final appUpdatesVis = _shouldShow('App Updates', 'Check for and install the latest Floppy release');
+
     final hasAnyMatch = generalStartupList.contains(true) ||
         fileExplorerList.contains(true) ||
         listLayoutList.contains(true) ||
@@ -453,7 +216,10 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
         appearanceList.contains(true) ||
         homeScreenList.contains(true) ||
         backupSettingsVis ||
-        restoreSettingsVis;
+        restoreSettingsVis ||
+        developerCreditVis ||
+        appInfoVis ||
+        appUpdatesVis;
 
     return PopScope(
       canPop: !_isSearching,
@@ -469,6 +235,7 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: !widget.embedded,
           title: _isSearching
               ? TextField(
                   controller: _searchController,
@@ -489,21 +256,23 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                     });
                   },
                 )
-              : const Text('More Settings'),
-          leading: IconButton(
-            icon: const FloppyIcon(Broken.arrow_left),
-            onPressed: () {
-              if (_isSearching) {
-                setState(() {
-                  _isSearching = false;
-                  _searchQuery = '';
-                  _searchController.clear();
-                });
-              } else {
-                Navigator.pop(context);
-              }
-            },
-          ),
+              : Text(widget.embedded ? 'Settings' : 'More Settings'),
+          leading: widget.embedded && !_isSearching
+              ? null
+              : IconButton(
+                  icon: const FloppyIcon(Broken.arrow_left),
+                  onPressed: () {
+                    if (_isSearching) {
+                      setState(() {
+                        _isSearching = false;
+                        _searchQuery = '';
+                        _searchController.clear();
+                      });
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
           actions: [
             if (_isSearching)
               IconButton(
@@ -610,13 +379,72 @@ class _MoreSettingsScreenState extends State<MoreSettingsScreen> {
                   subtitle: 'Backup your settings to a JSON file or restore them',
                   targetScreen: const BackupSettingsScreen(),
                 ),
-                const SizedBox(height: 24),
-                _buildDeveloperCreditSection(context, theme),
-                const SizedBox(height: 32),
-                _buildAppInfoSection(context, theme),
-                const SizedBox(height: 32),
-                _buildAppUpdateSection(context, theme),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8, left: 4),
+                  child: Text(
+                    'App & Support',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface.withOpacity(0.8),
+                    ),
+                  ),
+                ),
+                _buildCategoryCard(
+                  context,
+                  theme,
+                  icon: Broken.user,
+                  title: 'Developer Credit',
+                  subtitle: 'The developer behind Floppy, links and acknowledgements',
+                  targetScreen: const DeveloperCreditsScreen(),
+                ),
+                _buildCategoryCard(
+                  context,
+                  theme,
+                  icon: Broken.information,
+                  title: 'App Info',
+                  subtitle: 'Version, build number, package and device details',
+                  targetScreen: const AppInfoScreen(),
+                ),
+                _buildCategoryCard(
+                  context,
+                  theme,
+                  icon: Broken.refresh,
+                  title: 'App Updates',
+                  subtitle: 'Check for and install the latest Floppy release',
+                  targetScreen: const AppUpdatesScreen(),
+                ),
               ] else ...[
+                if (developerCreditVis || appInfoVis || appUpdatesVis) ...[
+                  _buildSectionHeader(theme, 'App & Support'),
+                  if (developerCreditVis)
+                    _buildCategoryCard(
+                      context,
+                      theme,
+                      icon: Broken.user,
+                      title: 'Developer Credit',
+                      subtitle: 'The developer behind Floppy, links and acknowledgements',
+                      targetScreen: const DeveloperCreditsScreen(),
+                    ),
+                  if (appInfoVis)
+                    _buildCategoryCard(
+                      context,
+                      theme,
+                      icon: Broken.information,
+                      title: 'App Info',
+                      subtitle: 'Version, build number, package and device details',
+                      targetScreen: const AppInfoScreen(),
+                    ),
+                  if (appUpdatesVis)
+                    _buildCategoryCard(
+                      context,
+                      theme,
+                      icon: Broken.refresh,
+                      title: 'App Updates',
+                      subtitle: 'Check for and install the latest Floppy release',
+                      targetScreen: const AppUpdatesScreen(),
+                    ),
+                ],
                 if (!hasAnyMatch) ...[
                   const SizedBox(height: 60),
                   Center(
